@@ -9,7 +9,9 @@ const cors = require("cors");
 
 var indexRouter = require("./routes/index");
 var usersRouter = require("./routes/users");
-const authRouter = require("./routes/auth.route");
+const authRouter = require("./routes/auth");
+
+const isAuthenticated = require("./middlewares/jwt.middleware");
 
 var app = express();
 

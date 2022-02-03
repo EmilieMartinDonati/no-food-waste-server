@@ -2,7 +2,8 @@ const router = require("express").Router();
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const saltRounds = 10;
-
+const User = require("../models/User.model");
+const isAuthenticated = require("../middlewares/jwt.middleware");
 // Route pour le signup.
 
 router.post("/signup", async (req, res, next) => {
@@ -14,7 +15,7 @@ router.post("/signup", async (req, res, next) => {
     // Add logic for unsufficient password with a regex.
     try {
         // Here find by email in the user model.
-        const foundUser = "toto";
+        const foundUser = User.findOne({email});
         if (foundUser) {
             res.status(400).json({ message: "it seems that you already have an account." });
             return;
@@ -28,6 +29,7 @@ router.post("/signup", async (req, res, next) => {
             name,
             email,
             password: hashedPass,
+            role: role
         });
 
         const user = createdUser.toObject();
@@ -74,3 +76,10 @@ router.post("/login", async (req, res, next) => {
     }
 });
 
+router.post("/account", isAuthenticated, (req, res, next) => {
+    console.log("req payload", req.payload);
+	res.status(200).json(req.payload);
+});
+
+
+module.exports = router;
