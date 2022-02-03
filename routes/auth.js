@@ -22,8 +22,6 @@ router.post("/signup", async (req, res, next) => {
         }
         const salt = bcrypt.genSaltSync(saltRounds);
         const hashedPass = bcrypt.hashSync(password, salt);
-
-
         // Utilisation du user model.
         const createdUser = await User.create({
             name,
@@ -31,7 +29,6 @@ router.post("/signup", async (req, res, next) => {
             password: hashedPass,
             role: role
         });
-
         const user = createdUser.toObject();
         delete user.password;
         // Sending the user as json to the client
