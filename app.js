@@ -1,15 +1,29 @@
-var createError = require("http-errors");
-var express = require("express");
-var path = require("path");
-var cookieParser = require("cookie-parser");
-var logger = require("morgan");
+require("dotenv").config(); // import all key/value pairs from .env in process.env : really usefull when going online :)
+require("./config/db.config");
+var createError = require('http-errors');
+var express = require('express');
+var path = require('path');
+var cookieParser = require('cookie-parser');
+var logger = require('morgan');
+const cors = require("cors");
 
 var indexRouter = require("./routes/index");
 var usersRouter = require("./routes/users");
 
 var app = express();
 
-app.use(logger("dev"));
+// this rule allows the client app to exchange via http via the server (AJAX ... Axios)
+const corsOptions = {
+	origin: [process.env.CLIENT_URL],
+	/* credentials : Configures the Access-Control-Allow-Credentials CORS header. Set to true to pass the header, otherwise it is omitted  https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Access-Control-Allow-Credentials */
+	credentials: true,
+	optionsSuccessStatus: 200,
+};
+
+// cors middle on
+app.use(cors(corsOptions));
+
+app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
@@ -31,7 +45,11 @@ app.use(function (err, req, res, next) {
 
   // render the error page
   res.status(err.status || 500);
+<<<<<<< HEAD
   // res.send("error");
+=======
+  res.json('error');
+>>>>>>> 7e9de4dd054a4e5c7a13556e9e56f7f6e6656f7b
 });
 
 module.exports = app;
