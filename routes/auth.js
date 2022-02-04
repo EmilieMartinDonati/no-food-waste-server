@@ -68,7 +68,7 @@ router.post("/signup", async (req, res, next) => {
 router.post("/signin", async (req, res, next) => {
   const { email, password } = req.body;
 
-  console.log("this is req.body in the backend on line 71", req.body);
+  // console.log("this is req.body in the backend on line 71", req.body);
 
   if (email === "" || password === "") {
     res
@@ -107,8 +107,8 @@ router.post("/signin", async (req, res, next) => {
       );
 
       //! Sending the authToken to the client !
-
-      res.status(200).json({ authToken });
+      console.log("back log user role", user.role);
+      res.status(200).json({ authToken, role: user.role});
     } else {
       res.status(401).json("Can you check your typos ?");
     }

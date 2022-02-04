@@ -48,7 +48,7 @@ const listings = [
 
 async function insertListings() {
     try {
-    // await ListingModel.deleteMany();
+    await ListingModel.deleteMany();
     const owners = await Promise.all([
         BusinessModel.findOne({ name: "Pizzayolo" }),
         BusinessModel.findOne({ name: "Pastacopy" }),

@@ -10,8 +10,12 @@ const cors = require("cors");
 var indexRouter = require("./routes/index");
 var usersRouter = require("./routes/users");
 const authRouter = require("./routes/auth");
+<<<<<<< HEAD
 const businessRouter = require("./routes/business.routes");
 const listingRouter = require("./routes/listing.routes");
+=======
+const buyerRouter = require("./routes/buyer");
+>>>>>>> 21b1c7a74498622a852cd8e2488fb56a9a643d41
 
 const isAuthenticated = require("./middlewares/jwt.middleware");
 
@@ -39,6 +43,10 @@ app.use("/", indexRouter);
 app.use("/api/auth", authRouter);
 app.use("/api/business", businessRouter);
 app.use("/api/listings", listingRouter);
+
+// The roads from the discover to the resa.
+
+app.use("/", buyerRouter);
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
