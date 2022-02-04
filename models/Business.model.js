@@ -8,8 +8,8 @@ const BusinessSchema = new Schema({
   description: { type: String, required: true },
   picture: { type: String },
   listings: [{ type: Schema.Types.ObjectId, ref: "listing" }],
-  tags: { type: [String], enum: ["Restaurant, Bakery, Supermarket"] },
-  pickupTimeSlots: { type: [Date], required: true },
+  tags: { type: [String], enum: ["Restaurant", "Bakery", "Supermarket"] },
+  // pickupTimeSlots: { type: [Date], required: true },
 });
 
 module.exports = model("business", BusinessSchema);

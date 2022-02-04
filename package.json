@@ -4,7 +4,11 @@
   "private": true,
   "scripts": {
     "start": "node ./bin/www",
-    "dev": "nodemon app.js"
+    "dev": "nodemon app.js",
+    "seed:user": "node ./bin/seed/seed.user.js",
+    "seed:business": "node ./bin/seed/seed.business.js",
+    "seed:listings": "node ./bin/seed/seed.listings.js",
+    "seed:all": "npm run seed:user && npm run seed:business && npm run seed:listings"
   },
   "dependencies": {
     "axios": "^0.25.0",

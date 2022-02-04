@@ -8,7 +8,7 @@ const ListingModel = new Schema({
   description: { type: String, required: true },
   archived: Boolean,
   recurring: Boolean,
-  PublishedDate: Date,
+  publishedDate: Date,
 });
 
 module.exports = model("listing", ListingModel);
