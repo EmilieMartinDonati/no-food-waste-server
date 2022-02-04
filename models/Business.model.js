@@ -1,7 +1,7 @@
 const { model, Schema } = require("mongoose");
 
 const BusinessSchema = new Schema({
-  owwner: { type: Schema.Types.ObjectId, ref: "user" },
+  owner: { type: Schema.Types.ObjectId, ref: "user" },
   name: { type: String, required: true },
   phone: { type: Number, required: true },
   address: { type: String, required: true },
