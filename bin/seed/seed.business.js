@@ -46,7 +46,7 @@ const businesses = [
     async function insertBusinesses() {
         try {
             
-
+           await BusinessModel.deleteMany();
 
             const users = await Promise.all([
                 UserModel.findOne({ name: "Lino" }),
