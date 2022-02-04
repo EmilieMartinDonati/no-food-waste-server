@@ -1,92 +1,120 @@
 const router = require("express").Router();
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
-const saltRounds = 10;
-const User = require("../models/User.model");
+const mongoose = require("mongoose");
 const isAuthenticated = require("../middlewares/jwt.middleware");
-// Route pour le signup.
+const User = require("./../models/User.model");
+const saltRounds = 10;
+
+/**
+ *
+ * * All the routes are prefixed with `/api/auth`
+ *
+ */
 
 router.post("/signup", async (req, res, next) => {
-  const { name, email, password } = req.body;
-  console.log("THIS IS REQ BODY", req.body);
-  if (email === "" || name === "" || password === "") {
-    res
-      .status(400)
-      .json({ message: "please enter all fields with a valid value" });
-  }
+	const { name, email, password, role } = req.body;
+    console.log("this is req body", req.body);
+	if (email === "" || name === "" || password === "") {
+		res
+			.status(400)
+			.json({ message: "I need some informations to work with here!" });
+	}
 
-  console.log("Do you arrive up to line 18????");
-  // Add logic for unsufficient password with a regex.
-  try {
-    // Here find by email in the user model.
-    const foundUser = User.findOne({ email });
-    if (foundUser) {
-      res
-        .status(400)
-        .json({ message: "it seems that you already have an account." });
-      return;
-    }
+	// ! To use only if you want to enforce strong password (not during dev-time)
 
-    console.log("Do you arrive up to line 30????");
+	// const regex = /(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}/;
 
-    const salt = bcrypt.genSaltSync(saltRounds);
-    const hashedPass = bcrypt.hashSync(password, salt);
+	// if (!regex.test(password)) {
+	// 	return res
+	// 		.status(400)
+	// 		.json({
+	// 			message:
+	// 				"Password needs to have at least 8 chars and must contain at least one number, one lowercase and one uppercase letter.",
+	// 		});
+	// }
 
-    // Utilisation du user model.
-    const createdUser = await User.create({
-      name,
-      email,
-      password: hashedPass,
-      // role: role
-    });
+	try {
+		const foundUser = await User.findOne({ email });
+		if (foundUser) {
+			res
+				.status(400)
+				.json({ message: "There's another one of you, somewhere." });
+			return;
+		}
+		const salt = bcrypt.genSaltSync(saltRounds);
+		const hashedPass = bcrypt.hashSync(password, salt);
 
-    console.log("CREATED USER on line 43", createdUser);
+		const createdUser = await User.create({
+			name,
+			email,
+			password: hashedPass,
+            role: role
+		});
 
-    const user = createdUser.toObject();
-    delete user.password;
-    // Sending the user as json to the client
-    res.status(201).json({ user });
-  } catch (error) {
-    console.log(error);
-    res.status(500).json({ message: "Internal servor error" });
-  }
+		const user = createdUser.toObject();
+		delete user.password;
+		// ! Sending the user as json to the client
+		res.status(201).json({ user });
+	} catch (error) {
+		console.log(error);
+		if (error instanceof mongoose.Error.ValidationError) {
+			return res.status(400).json({ message: error.message });
+		}
+		res.status(500).json({ message: "Sweet, sweet 500." });
+	}
 });
 
-// Route pour le login.
+router.post("/signin", async (req, res, next) => {
+	const { email, password } = req.body;
+	if (email === "" || password === "") {
+		res
+			.status(400)
+			.json({ message: "I need some informations to work with here!" });
+	}
+	try {
+		const foundUser = await User.findOne({ email });
+		if (!foundUser) {
+			res.status.apply(401).json({ message: "You're not yourself." });
+			return;
+		}
+		const goodPass = bcrypt.compareSync(password, foundUser.password);
+		if (goodPass) {
+			const user = foundUser.toObject();
+			delete user.password;
 
-router.post("/login", async (req, res, next) => {
-  const { email, password } = req.body;
+			/**
+			 * Sign method allow you to create the token.
+			 *
+			 * ---
+			 *
+			 * - First argument: user, should be an object. It is our payload !
+			 * - Second argument: A-really-long-random-string...
+			 * - Third argument: Options...
+			 */
 
-  try {
-    const foundUser = await User.findOne({ email });
-    if (!foundUser) {
-      res.status.apply(401).json({ message: "wrong email" });
-      return;
-    }
-    const goodPass = bcrypt.compareSync(password, foundUser.password);
-    if (goodPass) {
-      const user = foundUser.toObject();
-      delete user.password;
-      const authToken = jwt.sign(user, process.env.TOKEN_SECRET, {
-        algorithm: "HS256",
-        expiresIn: "6d",
-      });
-      //! Sending the authToken to the client :
-      res.status(200).json({ authToken });
-    } else {
-      res.status(401).json("wrong password");
-    }
-  } catch (error) {
-    console.log(error);
-    res.status(500).json({
-      message: "Something went wrong",
-    });
-  }
+			const authToken = jwt.sign(user, process.env.TOKEN_SECRET, {
+				algorithm: "HS256",
+				expiresIn: "2d",
+			});
+
+			//! Sending the authToken to the client !
+
+			res.status(200).json({ authToken });
+		} else {
+			res.status(401).json("Can you check your typos ?");
+		}
+	} catch (error) {
+		console.log(error);
+		res
+			.status(500)
+			.json({ message: "Oh noes ! Something went terribly wrong !" });
+	}
 });
 
-router.post("/account", isAuthenticated, (req, res, next) => {
-  console.log("req payload", req.payload);
-  res.status(200).json(req.payload);
+router.get("/me", isAuthenticated, (req, res, next) => {
+	// console.log("req payload", req.payload);
+	res.status(200).json(req.payload);
 });
 
 module.exports = router;
