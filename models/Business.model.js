@@ -1,7 +1,7 @@
 const { model, Schema } = require("mongoose");
 
 const BusinessSchema = new Schema({
-  owwner: { type: Schema.Types.ObjectId, ref: "user" },
+  owner: { type: Schema.Types.ObjectId, ref: "user" },
   name: { type: String, required: true },
   phone: { type: Number, required: true },
   address: { type: String, required: true },
@@ -9,7 +9,7 @@ const BusinessSchema = new Schema({
   picture: { type: String },
   listings: [{ type: Schema.Types.ObjectId, ref: "listing" }],
   tags: { type: [String], enum: ["Restaurant", "Bakery", "Supermarket"] },
-  // pickupTimeSlots: { type: [Date], required: true },
+  timeSlots: { type: [Date], required: true },
 });
 
 module.exports = model("business", BusinessSchema);

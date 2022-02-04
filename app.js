@@ -10,6 +10,8 @@ const cors = require("cors");
 var indexRouter = require("./routes/index");
 var usersRouter = require("./routes/users");
 const authRouter = require("./routes/auth");
+const businessRouter = require("./routes/business.routes");
+const listingRouter = require("./routes/listing.routes");
 
 const isAuthenticated = require("./middlewares/jwt.middleware");
 
@@ -35,6 +37,8 @@ app.use(express.static(path.join(__dirname, "public")));
 app.use("/", indexRouter);
 // app.use("/users", usersRouter);
 app.use("/api/auth", authRouter);
+app.use("/api/business", businessRouter);
+app.use("/api/listings", listingRouter);
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
