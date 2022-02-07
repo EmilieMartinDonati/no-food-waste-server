@@ -6,9 +6,9 @@ const ListingModel = new Schema({
   price: { type: Number, required: true },
   availableQuantity: { type: Number, required: true },
   description: { type: String, required: true },
-  archived: Boolean,
-  recurring: Boolean,
-  publishedDate: Date,
+  archived: { type: Boolean, default: false },
+  recurring: { type: Boolean, default: true },
+  publishedDate: { type: Date, default: new Date() },
 });
 
 module.exports = model("listing", ListingModel);
