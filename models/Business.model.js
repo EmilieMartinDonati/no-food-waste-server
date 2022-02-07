@@ -9,7 +9,8 @@ const BusinessSchema = new Schema({
   picture: { type: String },
   listings: [{ type: Schema.Types.ObjectId, ref: "listing" }],
   tags: { type: [String], enum: ["Restaurant", "Bakery", "Supermarket"] },
-  timeSlots: { type: [Date], required: true },
+  startTimeSlot: { type: Date, required: true },
+  endTimeSlot: { type: Date, required: true },
 });
 
 module.exports = model("business", BusinessSchema);
