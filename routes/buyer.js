@@ -3,6 +3,7 @@ const mongoose = require("mongoose");
 const ListingModel = require("../models/Listing.model");
 const BusinessModel = require("../models/Business.model");
 
+
 router.get("/discover", async (req, res, next) => {
     try {
         // const businesses = await BusinessModel.find().populate("listings");
@@ -45,4 +46,7 @@ router.get("/listing/:id", async (req, res, next) => {
         next(e)
     }
 })
+
+
 module.exports = router;
+
