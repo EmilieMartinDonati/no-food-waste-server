@@ -4,6 +4,14 @@ const BusinessModel = require("./../../models/Business.model");
 const UserModel = require("./../../models/User.model");
 const ListingModel = require("./../../models/Listing.model");
 
+// Generation de dates random.
+function randomDate(start, end, startHour, endHour) {
+    var date = new Date(+start + Math.random() * (end - start));
+    var hour = startHour + Math.random() * (endHour - startHour) | 0;
+    date.setHours(hour);
+    return date;
+  }
+
 const businesses = [
     {
         owner: null,
