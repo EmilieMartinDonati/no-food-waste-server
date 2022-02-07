@@ -1,7 +1,10 @@
+const router = require("express").Router();
 const BusinessModel = require("../models/Business.model");
 const UserModel = require("./../models/User.model");
+const uploader = require("./../config/cloudinary");
+const isAuthenticated = require("./../middlewares/jwt.middleware");
 
-const router = require("express").Router();
+router.use(isAuthenticated);
 
 router.get("/", (req, res, next) => {
   BusinessModel.find()
@@ -9,15 +12,13 @@ router.get("/", (req, res, next) => {
     .catch((err) => console.error(err));
 });
 
-router.post("/create", (req, res, next) => {
-  console.log("THIS IS REQ BODY LINE 13", req.body);
-  console.log("THIS IS REQ SESSION LINE 14", req.session);
+router.post("/create", uploader.single("picture"), (req, res, next) => {
+  const picture = req.file?.path;
+  const owner = req.payload._id;
 
-  BusinessModel.create(req.body)
+  BusinessModel.create({ ...req.body, picture, owner })
     .then((createdBusiness) => res.status(200).json(createdBusiness))
     .catch((err) => next(err));
-
-  // UserModel.findById(req)
 });
 
 module.exports = router;
