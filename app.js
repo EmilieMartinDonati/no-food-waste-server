@@ -10,12 +10,11 @@ const cors = require("cors");
 var indexRouter = require("./routes/index");
 var usersRouter = require("./routes/users");
 const authRouter = require("./routes/auth");
+
 const businessRouter = require("./routes/business.routes");
 const listingRouter = require("./routes/listing.routes");
 const buyerRouter = require("./routes/buyer");
-
 const isAuthenticated = require("./middlewares/jwt.middleware");
-
 var app = express();
 
 // this rule allows the client app to exchange via http via the server (AJAX ... Axios)
@@ -58,7 +57,7 @@ app.use(function (err, req, res, next) {
 
   // render the error page
   res.status(err.status || 500);
-  res.json("error");
+  res.json(err.message);
 });
 
 module.exports = app;
