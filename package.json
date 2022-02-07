@@ -8,6 +8,7 @@
     "seed:user": "node ./bin/seed/seed.user.js",
     "seed:business": "node ./bin/seed/seed.business.js",
     "seed:listings": "node ./bin/seed/seed.listings.js",
+    "seed:category": "node ./bin/seed/seed.category.js",
     "seed:all": "npm run seed:user && npm run seed:business && npm run seed:listings"
   },
   "dependencies": {
