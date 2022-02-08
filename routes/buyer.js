@@ -4,6 +4,7 @@ const ListingModel = require("../models/Listing.model");
 const BusinessModel = require("../models/Business.model");
 const BookingModel = require("../models/Booking.model");
 const userModel = require("../models/User.model");
+const categoryModel = require("../models/Category.model");
 const isAuthenticated = require("./../middlewares/jwt.middleware");
 const UserModel = require("../models/User.model");
 
@@ -13,10 +14,7 @@ router.get("/discover", async (req, res, next) => {
     // console.log("those are the businesses", businesses);
 
     const listings = await ListingModel.find().populate("owner");
-    console.log(
-      "those are the listings retrieved from the database and populated I hope",
-      listings
-    );
+    // console.log("those are the listings retrieved from the database and populated I hope", listings);
     res.status(200).json(listings);
   } catch (e) {
     next(e);
@@ -25,14 +23,34 @@ router.get("/discover", async (req, res, next) => {
 
 router.get("/listings", async (req, res, next) => {
   try {
+    console.log("hello hello helloooooÒ");
     // const businesses = await BusinessModel.find();
     // console.log(businesses);
+    const categories = await categoryModel.find();
+    console.log("cat line 30 back", categories);
     const listings = await ListingModel.find().populate("owner");
-    console.log(
-      "those are the listings retrieved from the database and populated I hope",
-      listings
-    );
-    res.status(200).json(listings);
+    // console.log("those are the listings retrieved from the database and populated I hope", listings);
+    const data = {
+      categories: categories,
+      listings: listings,
+    };
+    res.status(200).json(data);
+  } catch (e) {
+    next(e);
+  }
+});
+
+router.post("/category", async (req, res, next) => {
+  try {
+    console.log("req body after post category", req.body);
+    const chosenCategory = await categoryModel
+      .findById(req.body.search)
+      .populate({
+        path: "listings",
+        populate: "owner",
+      });
+    console.log("this is the chosen category", chosenCategory);
+    res.status(200).json(chosenCategory);
   } catch (e) {
     next(e);
   }
@@ -63,8 +81,15 @@ router.post("/listing/:id", isAuthenticated, async (req, res, next) => {
     const currentUserId = req.payload._id;
     console.log("this is the req.payload in the listing post", req.payload._id);
     const { quantity, payment, listing, buyer } = req.body;
+    console.log("this is the qty type", typeof quantity);
     console.log("this is the id from params", req.params.id);
-    const covetedListing = await ListingModel.findById(req.params.id);
+    const foundListing = await ListingModel.findByIdAndUpdate(
+      req.params.id,
+      {
+        $inc: { availableQuantity: -Number(quantity) },
+      },
+      { new: true }
+    );
     const newReservation = await BookingModel.create({
       buyer,
       listing,
