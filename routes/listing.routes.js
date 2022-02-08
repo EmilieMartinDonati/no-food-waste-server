@@ -1,6 +1,7 @@
 const router = require("express").Router();
 const ListingModel = require("./../models/Listing.model");
 const BusinessModel = require("./../models/Business.model");
+const isAuthenticated = require("./../middlewares/jwt.middleware");
 
 // Get all listings
 router.get("/", (req, res, next) => {
@@ -19,11 +20,15 @@ router.get("/:listingId", (req, res, next) => {
 });
 
 // Create one listing
-router.post("/:businessId/create", async (req, res, next) => {
+router.post("/:businessId/create", isAuthenticated, async (req, res, next) => {
   try {
     // Retrieve the business Id from params
     const { businessId } = req.params;
+    // Retrieve the user Id from req payload (thanks to the middleware and the API Handler)And add the owner to the req.body
+    req.body.owner = req.payload._id;
     // Create a new listing
+    //! TO ERASE
+    console.log("This is req body line 31", req.body);
     const createdListing = await ListingModel.create(req.body);
     // Attach the new listing to the business
     await BusinessModel.findByIdAndUpdate(
