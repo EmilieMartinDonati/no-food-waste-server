@@ -79,7 +79,7 @@ router.get("/account", isAuthenticated, async (req, res, next) => {
     try {
         const currentUserId = req.payload._id;
         console.log("this is the req.payload._id", req.payload._id);
-        const foundUser = await userModel.findOne({ _id: currentUserId }).populate({
+        const foundUser = await userModel.findById(currentUserId).populate({
             path: "bookings",
             populate: {
                 path: "listing buyer"
@@ -97,18 +97,6 @@ router.get("/account", isAuthenticated, async (req, res, next) => {
     }
 })
 
-// router.get("/account/bookings", isAuthenticated, async (req, res, next) => {
-//     try {
-//         const user = req.payload._id;
-//         console.log("this is the user from the middleware", user);
-//         const userBookings = await bookingModel.find({ buyer: user });
-//         console.log(userBookings);
-//         res.status(200).json(userBookings);
-//     }
-//     catch (e) {
-//         next(e)
-//     }
-// })
 
 router.get("/account/bookings/:id", isAuthenticated, async (req, res, next) => {
     try {
