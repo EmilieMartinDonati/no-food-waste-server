@@ -13,8 +13,8 @@ const BusinessSchema = new Schema({
   },
   listings: [{ type: Schema.Types.ObjectId, ref: "listing" }],
   tags: [String],
-  startTimeSlot: { type: Date, required: true },
-  endTimeSlot: { type: Date, required: true },
+  startTimeSlot: { type: Date },
+  endTimeSlot: { type: Date },
 });
 
 module.exports = model("business", BusinessSchema);
