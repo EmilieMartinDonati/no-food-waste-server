@@ -24,7 +24,6 @@ router.get("/discover", async (req, res, next) => {
 
 router.get("/listings", async (req, res, next) => {
   try {
-    console.log("hello hello helloooooÒ");
     // const businesses = await BusinessModel.find();
     // console.log(businesses);
     const categories = await categoryModel.find();
@@ -103,12 +102,14 @@ router.post("/listing/:id", isAuthenticated, async (req, res, next) => {
         },
       }
     )
-    console.log("do I get there line 97 ?", myUser.bookings[0].listing._id, foundListing._id);
+
+    console.log("user data line 106", myUser, currentUserId)
+    // console.log("do I get there line 97 ?", myUser.bookings[0].listing._id, foundListing._id);
 
     const x = myUser.bookings.find((elem) => elem.listing._id.toString() == foundListing._id.toString());
     console.log("test 108", x);
 
-    if (x) {
+    if (x !== undefined) {
       console.log("line 98, do I get there ?")
 
       // Trouver le bon booking.
@@ -264,5 +265,17 @@ router.patch(
     }
   }
 );
+
+
+router.get("/favorites", isAuthenticated, async (req, res, next) => {
+  try {
+    const userId = req.payload._id;
+    const foundUser = await userModel.findById(userId).populate("favorites");
+    res.status(200).json(foundUser);
+  }
+  catch (e) {
+     next(e)
+  }
+})
 
 module.exports = router;
