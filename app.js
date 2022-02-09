@@ -14,7 +14,10 @@ const authRouter = require("./routes/auth");
 const businessRouter = require("./routes/business.routes");
 const listingRouter = require("./routes/listing.routes");
 const buyerRouter = require("./routes/buyer");
+const categoryRouter = require("./routes/category.routes");
+
 const isAuthenticated = require("./middlewares/jwt.middleware");
+
 var app = express();
 
 // this rule allows the client app to exchange via http via the server (AJAX ... Axios)
@@ -39,6 +42,7 @@ app.use("/", indexRouter);
 app.use("/api/auth", authRouter);
 app.use("/api/business", businessRouter);
 app.use("/api/listings", listingRouter);
+app.use("/api/category", categoryRouter);
 
 // The roads from the discover to the resa.
 

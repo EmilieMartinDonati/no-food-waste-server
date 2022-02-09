@@ -19,6 +19,9 @@ router.post("/create", uploader.single("picture"), (req, res, next) => {
   const picture = req.file?.path;
   const owner = req.payload._id;
 
+  // The tags key that we receive is a string instead of an array (probably because of formData)
+  req.body.tags = req.body.tags.split(",");
+
   BusinessModel.create({ ...req.body, picture, owner })
     .then((createdBusiness) => res.status(200).json(createdBusiness))
     .catch((err) => next(err));
