@@ -7,6 +7,7 @@ const userModel = require("../models/User.model");
 const categoryModel = require("../models/Category.model");
 const isAuthenticated = require("./../middlewares/jwt.middleware");
 const UserModel = require("../models/User.model");
+const jwt = require("jsonwebtoken");
 
 router.get("/discover", async (req, res, next) => {
   try {
@@ -222,31 +223,41 @@ router.patch(
   isAuthenticated,
   async (req, res, next) => {
     try {
+      // Retrieve the userId from request (thanks to APIhandler and the jwt middleware)
       const userId = req.payload._id;
-      console.log("This is userId line 133", userId);
+      // Retrieve the business ID from params
       const { businessId } = req.params;
-      console.log("This is businessId line 135", businessId);
 
-      const user = await UserModel.findById(userId);
-      console.log("this is user favorites line 138", user.favorites);
+      // Retrieve the user from the DB thanks to its ID
+      const concernedUser = await UserModel.findById(userId);
 
-      if (user.favorites.includes(businessId)) {
-        console.log("Do I even get here?");
+      // If the user
+      if (concernedUser.favorites.includes(businessId)) {
         const updatedUser = await UserModel.findByIdAndUpdate(
           userId,
           { $pull: { favorites: businessId } },
           { new: true }
         );
-        console.log("Do I even get here? 2");
-        res.status(204).json(updatedUser);
+        const user = updatedUser.toObject();
+        delete user.password;
+        const authToken = jwt.sign(user, process.env.TOKEN_SECRET, {
+          algorithm: "HS256",
+          expiresIn: "2d",
+        });
+        res.status(200).json(authToken);
       } else {
         const updatedUser = await UserModel.findByIdAndUpdate(
           userId,
           { $push: { favorites: businessId } },
           { new: true }
         );
-        console.log("Or here?");
-        res.status(204).json(updatedUser);
+        const user = updatedUser.toObject();
+        delete user.password;
+        const authToken = jwt.sign(user, process.env.TOKEN_SECRET, {
+          algorithm: "HS256",
+          expiresIn: "2d",
+        });
+        res.status(200).json(authToken);
       }
     } catch (error) {
       next(error);
