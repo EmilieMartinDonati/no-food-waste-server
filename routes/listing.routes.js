@@ -1,6 +1,7 @@
 const router = require("express").Router();
 const ListingModel = require("./../models/Listing.model");
 const BusinessModel = require("./../models/Business.model");
+const CategoryModel = require("./../models/Category.model");
 
 // Get all listings
 router.get("/", (req, res, next) => {
@@ -28,12 +29,24 @@ router.post("/:businessId/create", async (req, res, next) => {
     // Create a new listing
     const createdListing = await ListingModel.create(req.body);
     // Attach the new listing to the business
-    await BusinessModel.findByIdAndUpdate(
+    const foundBusiness = await BusinessModel.findByIdAndUpdate(
       businessId,
       { $push: { listings: createdListing } },
       { new: true }
     );
     // Send back the listing to the front
+
+    // Tags.
+    const categories = foundBusiness.tags;
+    console.log("retrieved categories line 40", categories);
+    categories.forEach(async (catId) => {
+      const foundCategory = await CategoryModel.findByIdAndUpdate(catId, {
+      $push: {listings: createdListing}
+      }, 
+      {new: true})
+    })
+    
+
     res.status(200).json(createdListing);
     // Else catch the error
   } catch (error) {

@@ -46,12 +46,13 @@ router.get("/listings", async (req, res, next) => {
 
 router.post("/category", async (req, res, next) => {
   try {
-    console.log("req body after post category", req.body);
+    console.log("req body after post category", req.body.search);
     const chosenCategory = await categoryModel
       .findById(req.body.search)
       .populate({
         path: "listings",
-        populate: "owner",
+        populate: {
+          path: "owner"},
       });
     console.log("this is the available quantity", chosenCategory);
     res.status(200).json(chosenCategory);
