@@ -57,49 +57,49 @@ const businesses = [
             
            await BusinessModel.deleteMany();
 
-            const users = await Promise.all([
-                UserModel.findOne({ name: "Lino" }),
-                UserModel.findOne({ name: "Ettore" }),
-                UserModel.findOne({ name: "Paul" }),
-            ]);
+            // const users = await Promise.all([
+            //     UserModel.findOne({ name: "Lino" }),
+            //     UserModel.findOne({ name: "Ettore" }),
+            //     UserModel.findOne({ name: "Paul" }),
+            // ]);
 
-            businesses[0].owner = users[0];
-            businesses[1].owner = users[1];
-            businesses[2].owner = users[2];
+            // businesses[0].owner = users[0];
+            // businesses[1].owner = users[1];
+            // businesses[2].owner = users[2];
 
-            // const listings = await Promise.all([
-            //         ListingModel.findOne({ name: "pokeball fusion" }),
-            //         ListingModel.findOne({ name: "hawaian pizza" }),
-            //         ListingModel.findOne({ name: "fried oreos" }),
-            //         ListingModel.findOne({ name: "currywurst" })
-            //     ]);
+            // // const listings = await Promise.all([
+            // //         ListingModel.findOne({ name: "pokeball fusion" }),
+            // //         ListingModel.findOne({ name: "hawaian pizza" }),
+            // //         ListingModel.findOne({ name: "fried oreos" }),
+            // //         ListingModel.findOne({ name: "currywurst" })
+            // //     ]);
 
-            const categories = await Promise.all([
+            // const categories = await Promise.all([
 
-                CategoryModel.findOne({ name: "Terroir" }),
-                CategoryModel.findOne({ name: "Italian" }),
-                CategoryModel.findOne({ name: "Mexican" }),
-                CategoryModel.findOne({ name: "Vegan" }),
-                CategoryModel.findOne({ name: "Bakery" }),
-                CategoryModel.findOne({ name: "Vegetarian" }),
-            ])
+            //     CategoryModel.findOne({ name: "Terroir" }),
+            //     CategoryModel.findOne({ name: "Italian" }),
+            //     CategoryModel.findOne({ name: "Mexican" }),
+            //     CategoryModel.findOne({ name: "Vegan" }),
+            //     CategoryModel.findOne({ name: "Bakery" }),
+            //     CategoryModel.findOne({ name: "Vegetarian" }),
+            // ])
 
-            businesses[0].tags[0] = categories[1];
-            businesses[0].tags[1] = categories[4];
-            businesses[0].tags[2] = categories[3];
-            businesses[1].tags[0] = categories[1];
-            businesses[1].tags[1] = categories[0];
-            businesses[1].tags[2] = categories[5];
-            businesses[2].tags[0] = categories[0];
-            businesses[2].tags[1] = categories[4];
+            // businesses[0].tags[0] = categories[1];
+            // businesses[0].tags[1] = categories[4];
+            // businesses[0].tags[2] = categories[3];
+            // businesses[1].tags[0] = categories[1];
+            // businesses[1].tags[1] = categories[0];
+            // businesses[1].tags[2] = categories[5];
+            // businesses[2].tags[0] = categories[0];
+            // businesses[2].tags[1] = categories[4];
 
             // businesses[0].listings[0] = listings[1];
             // businesses[0].listings[1] = listings[2];
             // businesses[1].listings[0] = listings[0];
             // businesses[2].listings[0] = listings[3];
 
-            const inserted = await BusinessModel.insertMany(businesses); // insert docs in db
-            console.log(`seed businesses done : ${inserted.length} documents inserted !`);
+            // const inserted = await BusinessModel.insertMany(businesses); // insert docs in db
+            // console.log(`seed businesses done : ${inserted.length} documents inserted !`);
             process.exit();
         } catch (err) {
             console.error(err);

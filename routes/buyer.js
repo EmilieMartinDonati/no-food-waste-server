@@ -155,7 +155,9 @@ router.get("/account", isAuthenticated, async (req, res, next) => {
     const foundUser = await userModel.findById(currentUserId).populate({
       path: "bookings",
       populate: [
-        { path: "buyer" },
+        {
+          path: "buyer",
+        },
         {
           path: "listing",
           populate: {
@@ -289,7 +291,14 @@ router.patch(
 router.get("/favorites", isAuthenticated, async (req, res, next) => {
   try {
     const userId = req.payload._id;
-    const foundUser = await userModel.findById(userId).populate("favorites");
+    const foundUser = await userModel.findById(userId).populate({
+      path: "favorites",
+      populate: {
+        path: "reviews",
+        populate: {
+          path: "writer",
+        }}
+      });
     res.status(200).json(foundUser);
   } catch (e) {
     next(e);

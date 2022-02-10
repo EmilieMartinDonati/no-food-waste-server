@@ -15,6 +15,7 @@ const businessRouter = require("./routes/business.routes");
 const listingRouter = require("./routes/listing.routes");
 const buyerRouter = require("./routes/buyer");
 const categoryRouter = require("./routes/category.routes");
+const reviewRouter = require("./routes/review.routes");
 
 const isAuthenticated = require("./middlewares/jwt.middleware");
 
@@ -43,6 +44,9 @@ app.use("/api/auth", authRouter);
 app.use("/api/business", businessRouter);
 app.use("/api/listings", listingRouter);
 app.use("/api/category", categoryRouter);
+app.use("/api", reviewRouter);
+
+
 
 // The roads from the discover to the resa.
 
