@@ -152,16 +152,21 @@ router.get("/account", isAuthenticated, async (req, res, next) => {
   try {
     const currentUserId = req.payload._id;
     console.log("this is the req.payload._id", req.payload._id);
-    const foundUser = await userModel.findById(currentUserId).populate({
-      path: "bookings",
-      populate: {
-        path: "listing buyer",
-      },
-      // populate: {
-      //     path: "buyer"
-      // }
-    });
-    console.log(foundUser);
+    const foundUser = await userModel.findById(currentUserId)
+      .populate({
+        path: "bookings",
+        populate: [
+          { path: "buyer" },
+          {
+            path: "listing",
+            populate: {
+              path: "owner"
+            }
+          },
+        ]
+      });
+
+    console.log(foundUser.bookings[0].buyer);
     res.status(200).json(foundUser);
   } catch (e) {
     next(e);
@@ -290,7 +295,7 @@ router.get("/favorites", isAuthenticated, async (req, res, next) => {
     res.status(200).json(foundUser);
   }
   catch (e) {
-     next(e)
+    next(e)
   }
 })
 
