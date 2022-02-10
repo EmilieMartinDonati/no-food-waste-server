@@ -154,14 +154,18 @@ router.get("/account", isAuthenticated, async (req, res, next) => {
     console.log("this is the req.payload._id", req.payload._id);
     const foundUser = await userModel.findById(currentUserId).populate({
       path: "bookings",
-      populate: {
-        path: "listing buyer",
-      },
-      // populate: {
-      //     path: "buyer"
-      // }
+      populate: [
+        { path: "buyer" },
+        {
+          path: "listing",
+          populate: {
+            path: "owner",
+          },
+        },
+      ],
     });
-    console.log(foundUser);
+
+    console.log(foundUser.bookings[0].buyer);
     res.status(200).json(foundUser);
   } catch (e) {
     next(e);
@@ -293,15 +297,19 @@ router.get("/favorites", isAuthenticated, async (req, res, next) => {
 });
 
 router.get("/my-booking/:listingId", async (req, res, next) => {
-  const { listingId } = req.params;
+  try {
+    const { listingId } = req.params;
 
-  const booking = await BookingModel.find({ listing: listingId }).populate(
-    "buyer listing"
-  );
+    const booking = await BookingModel.find({ listing: listingId }).populate(
+      "buyer listing"
+    );
 
-  console.log("This is the found booking >>> line 300", booking);
+    console.log("This is the found booking >>> line 300", booking);
 
-  res.status(200).json(booking);
+    res.status(200).json(booking);
+  } catch (error) {
+    next(error);
+  }
 });
 
 module.exports = router;
