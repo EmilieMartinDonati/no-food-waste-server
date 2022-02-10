@@ -34,6 +34,8 @@ router.post("/create", uploader.single("picture"), (req, res, next) => {
   const picture = req.file?.path;
   const owner = req.payload._id;
 
+  console.log("do I even get there ?")
+
   // The tags key that we receive is a string instead of an array (probably because of formData)
   req.body.tags = req.body.tags.split(",");
 
