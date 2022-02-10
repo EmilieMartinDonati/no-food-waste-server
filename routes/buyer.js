@@ -45,11 +45,14 @@ router.get("/listings", async (req, res, next) => {
 
 router.post("/category", async (req, res, next) => {
   try {
+    console.log("req body after post category", req.body.search);
     const chosenCategory = await categoryModel
       .findById(req.body.search)
       .populate({
         path: "listings",
-        populate: "owner",
+        populate: {
+          path: "owner",
+        },
       });
     res.status(200).json(chosenCategory);
   } catch (e) {
@@ -272,8 +275,9 @@ router.get("/favorites", isAuthenticated, async (req, res, next) => {
         path: "reviews",
         populate: {
           path: "writer",
-        }}
-      });
+        },
+      },
+    });
     res.status(200).json(foundUser);
   } catch (e) {
     next(e);
