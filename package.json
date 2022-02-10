@@ -11,6 +11,10 @@
     "seed:category": "node ./bin/seed/seed.category.js",
     "seed:all": "npm run seed:user && npm run seed:business && npm run seed:listings"
   },
+
+  
+
+
   "dependencies": {
     "axios": "^0.25.0",
     "bcrypt": "^5.0.1",
