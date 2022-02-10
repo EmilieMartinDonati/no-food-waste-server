@@ -5,7 +5,18 @@ const BusinessModel = require("./../models/Business.model");
 // Get all listings
 router.get("/", (req, res, next) => {
   ListingModel.find()
-    .then((allListings) => res.status(200).json(allListings))
+    .populate("owner")
+    .then((allListings) => {
+      allListings.forEach((listing) => {
+        if (
+          listing.owner.endTimeSlot.getTime() < new Date().getTime() &&
+          listing.recurring === false
+        ) {
+          listing.archived = true;
+        }
+      });
+      return res.status(200).json(allListings);
+    })
     .catch((err) => next(err));
 });
 
@@ -66,13 +77,14 @@ router.delete("/:businessId/delete/:listingId", async (req, res, next) => {
 router.patch("/modify/:listingId", async (req, res, next) => {
   try {
     const { listingId } = req.params;
-    const { name, price, availableQuantity, description, recurring } = req.body;
+    const { name, price, availableQuantity, description, recurring, archived } =
+      req.body;
 
     console.log("This is req body / line 69 / listing Routes", req.body);
 
     const updatedListing = await ListingModel.findByIdAndUpdate(
       listingId,
-      { name, price, availableQuantity, description, recurring },
+      { name, price, availableQuantity, description, recurring, archived },
       { new: true }
     );
 

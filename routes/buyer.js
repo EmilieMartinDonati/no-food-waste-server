@@ -8,16 +8,16 @@ const categoryModel = require("../models/Category.model");
 const isAuthenticated = require("./../middlewares/jwt.middleware");
 const UserModel = require("../models/User.model");
 const jwt = require("jsonwebtoken");
+//Stripe setup
+const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
+const uuid = require("uuid").v4;
 
 router.get("/discover", async (req, res, next) => {
   try {
-    // const businesses = await BusinessModel.find().populate("listings");
-    // console.log("those are the businesses", businesses);
-
     const listings = await ListingModel.find({
       availableQuantity: { $gt: 0 },
     }).populate("owner");
-    // console.log("those are the listings retrieved from the database and populated I hope", listings);
+
     res.status(200).json(listings);
   } catch (e) {
     next(e);
@@ -26,18 +26,17 @@ router.get("/discover", async (req, res, next) => {
 
 router.get("/listings", async (req, res, next) => {
   try {
-    // const businesses = await BusinessModel.find();
-    // console.log(businesses);
     const categories = await categoryModel.find();
-    console.log("cat line 30 back", categories);
+
     const listings = await ListingModel.find({
       availableQuantity: { $gt: 0 },
     }).populate("owner");
-    // console.log("those are the listings retrieved from the database and populated I hope", listings);
+
     const data = {
       categories: categories,
       listings: listings,
     };
+
     res.status(200).json(data);
   } catch (e) {
     next(e);
@@ -46,14 +45,12 @@ router.get("/listings", async (req, res, next) => {
 
 router.post("/category", async (req, res, next) => {
   try {
-    console.log("req body after post category", req.body);
     const chosenCategory = await categoryModel
       .findById(req.body.search)
       .populate({
         path: "listings",
         populate: "owner",
       });
-    console.log("this is the available quantity", chosenCategory);
     res.status(200).json(chosenCategory);
   } catch (e) {
     next(e);
@@ -61,19 +58,10 @@ router.post("/category", async (req, res, next) => {
 });
 
 router.get("/listing/:id", async (req, res, next) => {
-  // res.send("fooo")
   try {
-    console.log("log line 36, for the individual listings");
-    const businesses = await BusinessModel.find();
-    console.log(req.params.id);
-    console.log(businesses);
     const foundListing = await ListingModel.findById(req.params.id).populate(
       "owner"
     );
-    // console.log(
-    //   "this is the relevant listing retrieved from the db I hope :-) ",
-    //   foundListing
-    // );
     res.status(200).json(foundListing);
   } catch (e) {
     next(e);
@@ -83,11 +71,10 @@ router.get("/listing/:id", async (req, res, next) => {
 router.post("/listing/:id", isAuthenticated, async (req, res, next) => {
   try {
     const currentUserId = req.payload._id;
-    // console.log("this is the req.payload in the listing post", req.payload._id);
-    const { quantity, payment, listing, buyer } = req.body;
-    // console.log("this is the qty type", typeof quantity);
-    // console.log("this is the id from params", req.params.id);
-    const foundListing = await ListingModel.findByIdAndUpdate(
+    const { quantity, listing, buyer } = req.body;
+
+    // Update the listing (decrement the available quantity)
+    let foundListing = await ListingModel.findByIdAndUpdate(
       req.params.id,
       {
         $inc: { availableQuantity: -Number(quantity) },
@@ -95,7 +82,13 @@ router.post("/listing/:id", isAuthenticated, async (req, res, next) => {
       { new: true }
     );
 
-    console.log("this is the found listing line 94", foundListing);
+    // If the listing's available quantity is <= 0, set it as archived/inactive
+    if (foundListing.availableQuantity <= 0)
+      foundListing = await ListingModel.findByIdAndUpdate(
+        req.params.id,
+        { archived: true },
+        { new: true }
+      );
 
     // So here I need to check whether the user already has this listing.
     const myUser = await userModel.findById(currentUserId).populate({
@@ -105,42 +98,34 @@ router.post("/listing/:id", isAuthenticated, async (req, res, next) => {
       },
     });
 
-    const x = myUser.bookings.find(
-      (elem) => elem.listing._id.toString() == foundListing._id.toString()
+    // Check if we find a booking corresponding to this listing for this user
+    const thisBookingAlreadyExists = myUser.bookings.find(
+      (elem) => elem.listing?._id.toString() == foundListing?._id.toString()
     );
-    console.log("test 108", x);
 
-    if (x) {
-      console.log("line 98, do I get there ?");
-
-      // Trouver le bon booking.
+    if (thisBookingAlreadyExists) {
+      // Update the booking bought quantity (instead of creating another booking)
       const updatedBooking = await BookingModel.findOneAndUpdate(
         { listing: foundListing._id },
         { $inc: { quantity: Number(quantity) } },
         { new: true }
       );
-      console.log("this is updatedBooking line 118", updatedBooking);
       res.status(200).json(updatedBooking);
     } else {
+      // If the booking does not exist for this listing, create a booking
       const newReservation = await BookingModel.create({
         buyer,
         listing,
         quantity,
       });
 
-      const foundUser = await userModel.findByIdAndUpdate(
+      // And add it to the user's bookings array
+      await userModel.findByIdAndUpdate(
         currentUserId,
-        {
-          // $addToset: { bookings : newReservation}
-          $push: { bookings: newReservation },
-        },
+        { $push: { bookings: newReservation } },
         { new: true }
       );
-      // console.log(
-      //   "this is foundUser line 58 in the listing post with a ref in the bookings normally",
-      //   foundUser
-      // );
-      console.log(newReservation);
+
       res.status(200).json(newReservation);
     }
   } catch (e) {
@@ -151,7 +136,7 @@ router.post("/listing/:id", isAuthenticated, async (req, res, next) => {
 router.get("/account", isAuthenticated, async (req, res, next) => {
   try {
     const currentUserId = req.payload._id;
-    console.log("this is the req.payload._id", req.payload._id);
+
     const foundUser = await userModel.findById(currentUserId).populate({
       path: "bookings",
       populate: [
@@ -165,7 +150,6 @@ router.get("/account", isAuthenticated, async (req, res, next) => {
       ],
     });
 
-    console.log(foundUser.bookings[0].buyer);
     res.status(200).json(foundUser);
   } catch (e) {
     next(e);
@@ -174,14 +158,14 @@ router.get("/account", isAuthenticated, async (req, res, next) => {
 
 router.get("/account/bookings/:id", isAuthenticated, async (req, res, next) => {
   try {
-    const listings = await ListingModel.find().populate("owner");
+    // const listings = await ListingModel.find().populate("owner");
     const foundBooking = await BookingModel.findById(req.params.id).populate({
       path: "listing",
       populate: {
         path: "owner",
       },
     });
-    console.log("this is the found booking", foundBooking);
+
     res.status(200).json(foundBooking);
   } catch (e) {
     next(e);
@@ -195,36 +179,27 @@ router.delete(
   isAuthenticated,
   async (req, res, next) => {
     try {
-      console.log("getting there line 158");
       const { bookingId, bookingQuantity } = req.params;
-      console.log(
-        "my req params",
-        req.params,
-        "my quantity",
-        bookingQuantity,
-        "the id",
-        bookingId
-      );
+
       const booking = await BookingModel.findById(bookingId).populate(
         "listing"
       );
+
       const listingId = booking.listing._id;
-      console.log(
-        "this is the id of the listing that has been booked line 163",
-        listingId
-      );
-      const listingToUpdate = await ListingModel.findByIdAndUpdate(
+
+      await ListingModel.findByIdAndUpdate(
         listingId,
         {
           $inc: { availableQuantity: +Number(bookingQuantity) },
         },
         { new: true }
       );
+
       const { deletedcount } = await BookingModel.findByIdAndRemove(bookingId);
 
       const currentUserId = req.payload._id;
-      console.log("this is the req.payload._id", req.payload._id);
-      const user = await userModel.findByIdAndUpdate(
+
+      await userModel.findByIdAndUpdate(
         currentUserId,
         {
           $pull: { bookings: booking._id },
@@ -310,6 +285,39 @@ router.get("/my-booking/:listingId", async (req, res, next) => {
   } catch (error) {
     next(error);
   }
+});
+
+// Payment route
+router.post("/payment", (req, res, next) => {
+  const {
+    body: { token, listing },
+  } = req.body;
+
+  const idempotencyKey = uuid();
+
+  stripe.customers
+    .create({
+      email: token?.email,
+      source: "tok_us",
+      // customer: "pm_card_us",
+      id: token.id,
+    })
+    .then((customer) => {
+      console.log("This is customer line 334", customer);
+      return stripe.charges.create(
+        {
+          // Multiply by 100 because values arrive in cents
+          amount: listing.price * 100,
+          currency: "usd",
+          customer: customer.id,
+          receipt_email: token.email,
+          description: `Purchase of ${listing.name}`,
+        },
+        { idempotencyKey }
+      );
+    })
+    .then((result) => res.status(200).json(result))
+    .catch((error) => next(error));
 });
 
 module.exports = router;
