@@ -282,16 +282,26 @@ router.patch(
   }
 );
 
-
 router.get("/favorites", isAuthenticated, async (req, res, next) => {
   try {
     const userId = req.payload._id;
     const foundUser = await userModel.findById(userId).populate("favorites");
     res.status(200).json(foundUser);
+  } catch (e) {
+    next(e);
   }
-  catch (e) {
-     next(e)
-  }
-})
+});
+
+router.get("/my-booking/:listingId", async (req, res, next) => {
+  const { listingId } = req.params;
+
+  const booking = await BookingModel.find({ listing: listingId }).populate(
+    "buyer listing"
+  );
+
+  console.log("This is the found booking >>> line 300", booking);
+
+  res.status(200).json(booking);
+});
 
 module.exports = router;
