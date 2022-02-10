@@ -15,6 +15,7 @@ const BusinessSchema = new Schema({
   tags: [{ type: Schema.Types.ObjectId, ref: "category" }],
   startTimeSlot: { type: Date },
   endTimeSlot: { type: Date },
+  reviews : [{type: Schema.Types.ObjectId, ref: "review"}],
 });
 
 module.exports = model("business", BusinessSchema);

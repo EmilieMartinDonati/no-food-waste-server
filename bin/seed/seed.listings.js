@@ -78,19 +78,19 @@ const listings = [
 async function insertListings() {
     try {
     await ListingModel.deleteMany();
-    const owners = await Promise.all([
-        BusinessModel.findOne({ name: "Pizzayolo" }),
-        BusinessModel.findOne({ name: "Pastacopy" }),
-        BusinessModel.findOne({ name: "Schadenfreude" }),
-    ]);
+    // const owners = await Promise.all([
+    //     BusinessModel.findOne({ name: "Pizzayolo" }),
+    //     BusinessModel.findOne({ name: "Pastacopy" }),
+    //     BusinessModel.findOne({ name: "Schadenfreude" }),
+    // ]);
 
-     listings[0].owner = owners[1];
-     listings[1].owner = owners[0];
-     listings[2].owner = owners[0];
-     listings[3].owner = owners[2];
+    //  listings[0].owner = owners[1];
+    //  listings[1].owner = owners[0];
+    //  listings[2].owner = owners[0];
+    //  listings[3].owner = owners[2];
 
-    const inserted = await ListingModel.insertMany(listings); // insert docs in db
-    console.log(`seed listings done : ${inserted.length} documents inserted !`);
+    // const inserted = await ListingModel.insertMany(listings); // insert docs in db
+    // console.log(`seed listings done : ${inserted.length} documents inserted !`);
     process.exit();
   } catch (err) {
     console.error(err);

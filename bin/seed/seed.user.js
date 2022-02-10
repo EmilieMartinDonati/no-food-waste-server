@@ -41,16 +41,17 @@ async function insertUsers() {
 
         await UserModel.deleteMany();
 
-        const businesses = await Promise.all([
-            BusinessModel.findOne({ name: "Schadenfreude" }),
-            BusinessModel.findOne({ name: "Pastacopy" }),
-        ]);
+        // const businesses = await Promise.all([
+        //     BusinessModel.findOne({ name: "Schadenfreude" }),
+        //     BusinessModel.findOne({ name: "Pastacopy" }),
+        // ]);
 
-        users[3].favorites[0] = businesses[0];
-        users[3].favorites[0] = businesses[1];
+        // users[3].favorites[0] = businesses[0];
+        // users[3].favorites[0] = businesses[1];
 
-        const inserted = await UserModel.insertMany(users); // insert docs in db
-        console.log(`seed users done : ${inserted.length} documents inserted !`);
+        // const inserted = await UserModel.insertMany(users); // insert docs in db
+        // console.log(`seed users done : ${inserted.length} documents inserted !`);
+        process.exit();
     } catch (err) {
         console.error(err);
     }
