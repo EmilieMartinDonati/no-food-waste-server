@@ -17,12 +17,12 @@ router.post("/review/create", isAuthenticated, async (req, res, next) => {
             writer: req.payload._id
         })
 
-       const foundBusiness = await BusinessModel.findByIdAndUpdate(favoriteId, 
-        {$push: {reviews: insertedReview._id}}, 
-        {new: true}).populate({
-            path: "reviews",
-            populate : {path: "writer"}
-        })
+        const foundBusiness = await BusinessModel.findByIdAndUpdate(favoriteId,
+            { $push: { reviews: insertedReview._id } },
+            { new: true }).populate({
+                path: "reviews",
+                populate: { path: "writer" }
+            })
         res.status(200).json(foundBusiness);
     }
     catch (e) {
@@ -34,20 +34,26 @@ module.exports = router;
 
 // Delete comment
 
-router.delete("/review/delete/:reviewid", async (req, res, next) => {
+router.delete("/review/delete/:reviewid/:businessid", async (req, res, next) => {
     try {
-    const {reviewid} = req.params;
-    console.log("this is foreviewid", reviewid);
-    const foundReview = await ReviewModel.findById(reviewid);
-    // const foundBusiness = await BusinessModel.findOne({ 
-    //     reviews: { 
-    //        $elemMatch: { id: "620542d5c930d6357d25d457"} 
-    //     }
-    //  }); 
-     console.log("this is the business for the delete", foundBusiness);
-     res.status(200).json(foundReview);
+        const { reviewid, businessid } = req.params;
+        console.log("this is foreviewid", reviewid);
+        console.log("this is for business", businessid);
+        const foundReview = await reviewModel.findById(reviewid);
+        console.log(foundReview)
+        const foundBusiness = await BusinessModel.findByIdAndUpdate(businessid,
+            {
+                $pull: { reviews: foundReview._id }
+            }, { new: true }
+        ).populate({
+            path: "reviews",
+            populate: { path: "writer" }
+        });
+        const deletedReview = await reviewModel.findByIdAndRemove(reviewid);
+        console.log(foundBusiness);
+        res.status(200).json(foundBusiness);
     }
-    
+
     catch (e) {
         next(e)
     }

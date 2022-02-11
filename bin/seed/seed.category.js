@@ -27,37 +27,38 @@ const categories = [
   {
     name: "Japanese",
     listings: [],
-    color: colorArray[0]
+    color: "#f2cc6f",
   },
   {
     name: "Terroir",
     listings: [],
-    color: colorArray[1]
+    color: "#fefa48",
   },
   {
     name: "Mexican",
     listings: [],
-    color: colorArray[2]
+    color: "#8d9f85"
   },
   {
     name: "Libanese",
     listings: [],
-    color: colorArray[3]
+    color: "#d41260"
+
   },
   {
     name: "Bakery",
     listings: [],
-    color: colorArray[4]
+    color: "#fba317"
   },
   {
     name: "Vegetarian",
     listings: [],
-    color: colorArray[5]
+    color: "#493263"
   },
   {
     name: "Italian",
     listings: [],
-    color: colorArray[6]
+    color: "#ace5a1"
   },
   {
     name: "Supermarket",
