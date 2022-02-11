@@ -27,6 +27,11 @@ router.get("/discover", async (req, res, next) => {
 router.get("/listings", async (req, res, next) => {
   try {
     const categories = await categoryModel.find();
+    const businesses = await BusinessModel.find().populate({
+      path: "listings",
+      populate: { path: "owner" }
+    }
+    );
 
     const listings = await ListingModel.find({
       availableQuantity: { $gt: 0 },
@@ -35,6 +40,7 @@ router.get("/listings", async (req, res, next) => {
     const data = {
       categories: categories,
       listings: listings,
+      businesses
     };
 
     res.status(200).json(data);
