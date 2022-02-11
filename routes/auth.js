@@ -108,7 +108,7 @@ router.post("/signin", async (req, res, next) => {
 
       //! Sending the authToken to the client !
       console.log("back log user role", user.role);
-      res.status(200).json({ authToken});
+      res.status(200).json({ authToken });
     } else {
       res.status(401).json("Can you check your typos ?");
     }

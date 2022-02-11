@@ -52,7 +52,7 @@ app.use("/api", reviewRouter);
 
 app.use("/", buyerRouter);
 
-app.use("/api/*", (req, res, next) => {  
+app.use("/api/*", (req, res, next) => {
   const error = new Error("Ressource not found.");
   error.status = 404;
   next(error);
