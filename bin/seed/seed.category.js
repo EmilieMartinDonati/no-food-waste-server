@@ -97,7 +97,7 @@ async function insertCategories() {
     // categories[8].listings[1] = listings[1];
 
 
-    // const inserted = await CategoryModel.insertMany(categories); // insert docs in db
+    const inserted = await CategoryModel.insertMany(categories); // insert docs in db
     // console.log(
     //   `seed categories done : ${inserted.length} documents inserted !`
     // );
