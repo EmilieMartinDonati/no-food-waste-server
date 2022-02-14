@@ -3,72 +3,80 @@ require("../../config/db.config");
 const CategoryModel = require("../../models/Category.model");
 const ListingModel = require("../../models/Listing.model");
 
-let colorArray = [];
-function getRandomColor() {
-  var letters = '0123456789ABCDEF';
-  var color = '#';
-  for (var i = 0; i < 6; i++) {
-    color += letters[Math.floor(Math.random() * 16)];
-  }
-  return color;
-}
+// let colorArray = [];
+// function getRandomColor() {
+//   var letters = '0123456789ABCDEF';
+//   var color = '#';
+//   for (var i = 0; i < 6; i++) {
+//     color += letters[Math.floor(Math.random() * 16)];
+//   }
+//   return color;
+// }
 
-color1 = getRandomColor();
+// color1 = getRandomColor();
 
-console.log(typeof color1);
+// console.log(typeof color1);
 
-for (let i = 0; i < 9; i++) {
-  let color = getRandomColor();
-  colorArray.push(color);
-}
+// for (let i = 0; i < 9; i++) {
+//   let color = getRandomColor();
+//   colorArray.push(color);
+// }
 
 
 const categories = [
   {
     name: "Japanese",
     listings: [],
-    color: "#f2cc6f",
+    // color: "#c5ffac",
+    color: "#ffc9a1",
   },
   {
     name: "Terroir",
     listings: [],
-    color: "#fefa48",
+    // color: "#a1ffae",
+    color: "#ffbb97",
   },
   {
     name: "Mexican",
     listings: [],
-    color: "#8d9f85"
+    color: "#97ffd1",
+    color: "#ffac8d",
   },
   {
     name: "Libanese",
     listings: [],
-    color: "#d41260"
+    color: "#8dfffe",
+    color: "#ff9e83",
 
   },
   {
     name: "Bakery",
     listings: [],
-    color: "#fba317"
+    // color: "#83cbff",
+    color: "#ff8f79",
   },
   {
     name: "Vegetarian",
     listings: [],
-    color: "#493263"
+    // color: "#798dff",
+    color: "#ff806f"
   },
   {
     name: "Italian",
     listings: [],
-    color: "#ace5a1"
+    // color: "#976fff",
+    color: "#ff7264"
   },
   {
     name: "Supermarket",
     listings: [],
-    color: colorArray[7]
+    // color: "#d264ff"
+    color: "#ff635a"
   },
   {
     name: "Vegan",
     listings: [],
-    color: colorArray[8]
+    color: "#ff5550"
   },
 ];
 
